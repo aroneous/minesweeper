@@ -1,0 +1,51 @@
+body {
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.cell {
+    margin: 2px;
+    border: 1px solid black;
+    border-radius: 3px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#applayout {
+    height: 98vh;
+    max-width: 98vh;
+    max-height: 100vw;
+}
+
+.grid {
+    height: 100%;
+    margin: 8px;
+    flex-grow: 1;
+    flex-shrink: 1;
+    display: grid;
+    grid-template-columns: repeat(8, calc(100% / 8));
+    grid-auto-rows: calc(100% / 8);
+}
+
+.bomb {
+    background-color: orange;
+}
+
+.hidden {
+    background-color: grey;
+}
+
+.lost {
+    background-color: red;
+}
+
+.won {
+    background-color: green;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+}
