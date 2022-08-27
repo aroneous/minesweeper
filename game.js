@@ -24,14 +24,20 @@ function createModel() {
     for (var idx = 0; idx < NUM_CELLS; idx++) {
         model.push({});
     }
+    return model;
+}
+
+function initBombs(model, clicked_idx) {
     let all = range(0, NUM_CELLS);
+    if (clicked_idx >= 0) {
+        all.splice(clicked_idx, 1);
+    }
     for (var idx = 0; idx < NUM_BOMBS; idx++) {
         let bidx = Math.floor(Math.random() * all.length);
         let b = all[bidx];
         all.splice(bidx, 1);
         model[b].bomb=true;
     }
-
     return model;
 }
 
@@ -136,15 +142,24 @@ function neighborCount(model, idx) {
     var model = createModel();
     renderModel(model);
 
+    var first = true;
+
     let cells = document.getElementsByClassName("cell");
     for (let i=0, cell; (cell = cells[i]) !== undefined; i++) {
         cell.addEventListener('click', function(event) {
-            // model[i].revealed = true;
+            if (first) {
+                initBombs(model, i);
+                first = false;
+            }
             handleRevealed(model, i);
             renderModel(model);
         });
         cell.addEventListener('contextmenu', function(ev) {
             ev.preventDefault();
+            if (first) {
+                initBombs(model, -1);
+                first = false;
+            }
             model[i].flagged = true;
             renderModel(model);
             return false;
