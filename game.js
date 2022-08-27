@@ -6,6 +6,8 @@ const NUM_CELLS = NUM_ROWS * NUM_COLS;
 const NUM_BOMBS = 10;
 
 const BOMB = String.fromCodePoint(0x1F4A3);
+const COOL_FACE = String.fromCodePoint(0x1F60E);
+const DEAD_FACE = String.fromCodePoint(0x1F635);
 
 function initGrid() {
     grid.innerHTML = '';
@@ -50,6 +52,8 @@ function renderModel(model) {
     for (var idx = 0; idx < NUM_CELLS; idx++) {
         if (model[idx].flagged) {
             grid.children[idx].classList.add("flagged");
+        } else {
+            grid.children[idx].classList.remove("flagged");
         }
         if (!model[idx].revealed) {
             grid.children[idx].classList.remove("bomb");
@@ -75,6 +79,7 @@ function renderModel(model) {
     }
     if (lost) {
         document.body.classList.add("lost");
+        document.getElementById("statusholder").textContent = DEAD_FACE;
         for (var idx = 0; idx < NUM_CELLS; idx++) {
             if (model[idx].bomb && !model[idx].revealed) {
                 grid.children[idx].classList.remove("hidden");
@@ -84,6 +89,7 @@ function renderModel(model) {
         }
     } else if (won) {
         document.body.classList.add("won");
+        document.getElementById("statusholder").textContent = COOL_FACE;
     }
 }
 
@@ -162,7 +168,7 @@ function neighborCount(model, idx) {
                 initBombs(model, -1);
                 first = false;
             }
-            model[i].flagged = true;
+            model[i].flagged = !model[i].flagged;
             renderModel(model);
             return false;
         }, false);
