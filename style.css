@@ -37,6 +37,10 @@ body {
     background-color: grey;
 }
 
+.hidden.flagged {
+    background-color: blue;
+}
+
 .lost {
     background-color: red;
 }

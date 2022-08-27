@@ -40,6 +40,9 @@ function renderModel(model) {
     var lost = false;
     const grid = document.getElementById('grid');
     for (var idx = 0; idx < NUM_CELLS; idx++) {
+        if (model[idx].flagged) {
+            grid.children[idx].classList.add("flagged");
+        }
         if (!model[idx].revealed) {
             grid.children[idx].classList.remove("bomb");
             grid.children[idx].classList.add("hidden");
@@ -64,8 +67,30 @@ function renderModel(model) {
     }
     if (lost) {
         document.body.classList.add("lost");
+        for (var idx = 0; idx < NUM_CELLS; idx++) {
+            if (model[idx].bomb && !model[idx].revealed) {
+                grid.children[idx].classList.remove("hidden");
+                grid.children[idx].classList.add("bomb");
+                grid.children[idx].textContent = 'B';
+            }
+        }
     } else if (won) {
         document.body.classList.add("won");
+    }
+}
+
+function handleRevealed(model, clicked_idx) {
+    const seen = {};
+    const q = [clicked_idx];
+    while (q.length > 0) {
+        let idx = q.shift();
+        if (!seen[idx]) {
+            seen[idx] = true;
+            model[idx].revealed = true;
+            if (!model[idx].bomb && neighborCount(model, idx) === 0) {
+                q.push(...neighbors(idx));
+            }
+        }
     }
 }
 
@@ -104,42 +129,6 @@ function neighborCount(model, idx) {
         .length;
 }
 
-function seen(model, idx) {
-    let colRoot = idx % NUM_COLS;
-    for (var i = colRoot; i < NUM_CELLS; i += NUM_COLS) {
-        if (model[i].bomb) {
-            return true;
-        }
-    }
-    let rowIdx = Math.floor(idx / NUM_COLS);
-    let rowRoot = rowIdx * NUM_COLS;
-    for (i = rowRoot; i < rowRoot + NUM_COLS; i++) {
-        if (model[i].bomb) {
-            return true;
-        }
-    }
-
-    for (var rowNum = 0; rowNum < NUM_ROWS; rowNum++) {
-        let rowStart = rowNum * NUM_COLS;
-
-        let rowOffset = rowNum - rowIdx;
-        let leftDiagColNum = colRoot + rowOffset;
-        if (leftDiagColNum >= 0 && leftDiagColNum < NUM_COLS) {
-            if (model[rowStart + leftDiagColNum].bomb) {
-                return true;
-            }
-        }
-        let rightDiagColNum = colRoot - rowOffset;
-        if (rightDiagColNum >= 0 && rightDiagColNum < NUM_COLS) {
-            if (model[rowStart + rightDiagColNum].bomb) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
 (function() {
     let grid = document.getElementById("grid");
 
@@ -150,8 +139,15 @@ function seen(model, idx) {
     let cells = document.getElementsByClassName("cell");
     for (let i=0, cell; (cell = cells[i]) !== undefined; i++) {
         cell.addEventListener('click', function(event) {
-            model[i].revealed = true;
+            // model[i].revealed = true;
+            handleRevealed(model, i);
             renderModel(model);
         });
+        cell.addEventListener('contextmenu', function(ev) {
+            ev.preventDefault();
+            model[i].flagged = true;
+            renderModel(model);
+            return false;
+        }, false);
     }
 })();
