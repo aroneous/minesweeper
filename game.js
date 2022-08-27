@@ -5,6 +5,8 @@ const NUM_ROWS = 8;
 const NUM_CELLS = NUM_ROWS * NUM_COLS;
 const NUM_BOMBS = 10;
 
+const BOMB = String.fromCodePoint(0x1F4A3);
+
 function initGrid() {
     grid.innerHTML = '';
     for (var idx = 0; idx < NUM_CELLS; idx++) {
@@ -59,7 +61,7 @@ function renderModel(model) {
         } else if (model[idx].bomb) {
             grid.children[idx].classList.remove("hidden");
             grid.children[idx].classList.add("bomb");
-            grid.children[idx].textContent = 'B';
+            grid.children[idx].textContent = BOMB;
             lost = true;
         } else {
             grid.children[idx].classList.remove("hidden");
@@ -77,7 +79,7 @@ function renderModel(model) {
             if (model[idx].bomb && !model[idx].revealed) {
                 grid.children[idx].classList.remove("hidden");
                 grid.children[idx].classList.add("bomb");
-                grid.children[idx].textContent = 'B';
+                grid.children[idx].textContent = BOMB;
             }
         }
     } else if (won) {
